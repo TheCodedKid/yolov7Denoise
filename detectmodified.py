@@ -68,7 +68,8 @@ def detect(save_img=False):
 
     t0 = time.time()
     for path, img, im0s, vid_cap in dataset:
-        im0s = cv2.fastNlMeansDenoisingColored(im0s, None, 10, 10, 7, 21)
+        if opt.denoise:
+            im0s = cv2.fastNlMeansDenoisingColored(im0s, None, 10, 10, 7, 21)
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -184,6 +185,7 @@ if __name__ == '__main__':
     parser.add_argument('--name', default='exp', help='save results to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     parser.add_argument('--no-trace', action='store_true', help='don`t trace model')
+    parser.add_argument('--denoise', action='store_true', help='apply denoising filter to input images before detection')
     opt = parser.parse_args()
     print(opt)
     #check_requirements(exclude=('pycocotools', 'thop'))
